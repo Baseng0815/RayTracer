@@ -1,13 +1,20 @@
 use crate::vec::*;
 
-pub struct Ray(pub Vec3, pub Vec3);
+#[derive(Copy, Clone, Debug)]
+pub struct Ray {
+    pub origin: Vec3,
+    pub direction: Vec3
+}
 
 impl Ray {
     pub fn new(origin: &Vec3, direction: &Vec3) -> Ray {
-        Ray(*origin, direction.normalized())
+        Ray {
+            origin: *origin,
+            direction: *direction
+        }
     }
 
     pub fn at(&self, t: f64) -> Vec3 {
-        self.0 + t * self.1
+        self.origin + self.direction * t
     }
 }
