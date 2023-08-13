@@ -1,10 +1,21 @@
 use crate::ray::*;
 use crate::vec::*;
 
+#[derive(PartialEq, Clone, Copy)]
 pub struct Intersect {
     pub t: f64,
     pub point: Vec3,
     pub normal: Vec3
+}
+
+impl Intersect {
+    pub fn new() -> Intersect {
+        Intersect {
+            t: f64::MAX,
+            point: Vec3::ZERO,
+            normal: Vec3::ZERO
+        }
+    }
 }
 
 pub trait Geometry {

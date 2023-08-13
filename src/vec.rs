@@ -1,6 +1,6 @@
 use image::Rgb;
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Vec3(pub f64, pub f64, pub f64);
 
 impl Vec3 {

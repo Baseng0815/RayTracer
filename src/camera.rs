@@ -45,4 +45,9 @@ impl Camera {
                 direction: (self.lower_left_corner + self.vp_horizontal * u + self.vp_vertical * v).normalized()
             }
     }
+
+    pub fn background_color(ray: &Ray) -> Vec3 {
+        let a = 0.5 * (ray.direction.1 + 1.0);
+        Vec3::UNIT * (1.0 - a) + Vec3(0.5, 0.7, 1.0) * a
+    }
 }
