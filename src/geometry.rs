@@ -2,11 +2,13 @@ use crate::ray::*;
 use crate::vec::*;
 
 pub struct Intersect {
-
+    pub t: f64,
+    pub point: Vec3,
+    pub normal: Vec3
 }
 
 pub trait Geometry {
-    fn intersect_with(&self, ray: &Ray) -> Option<Intersect>;
+    fn intersect_with(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<Intersect>;
 }
 
 pub struct Sphere {
@@ -15,20 +17,25 @@ pub struct Sphere {
 }
 
 impl Geometry for Sphere {
-    fn intersect_with(&self, ray: &Ray) -> Option<Intersect> {
-        let ray_to_origin = ray.origin - self.origin;
-        let a = ray.direction.dot(&ray.direction);
-        let b = 2.0 * ray_to_origin.dot(&ray.direction);
-        let c = ray_to_origin.dot(&ray_to_origin) - self.radius * self.radius;
-        let discriminant = b * b - 4.0 * a  * c;
-        return if discriminant >= 0.0 {
-            Some(Intersect {  })
-        } else {
-            None
+    fn intersect_with(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<Intersect> {
+        let oc = ray.origin - self.origin;
+        let half_b = oc.dot(&ray.direction);
+        let c = oc.len_squared() - self.radius * self.radius;
+        let discriminant = half_b * half_b - c;
+
+        if discriminant >= 0.0 {
+            let mut t = -(half_b - discriminant.sqrt());
+            if t < t_min {
+                t = -(half_b + discriminant.sqrt());
+            }
+
+            if t >= t_min && t <= t_max {
+                let point = ray.at(t);
+                let normal = (point - self.origin).normalized();
+                return Some(Intersect { t, point, normal });
+            }
         }
+
+        None
     }
-}
-
-impl Sphere {
-
 }

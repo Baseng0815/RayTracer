@@ -3,48 +3,46 @@ use image::{GenericImage, Rgb};
 mod vec;
 mod ray;
 mod geometry;
+mod camera;
 
 use vec::*;
 use ray::*;
 use geometry::*;
+use camera::*;
+
+type Scene = Vec<Box<dyn Geometry>>;
 
 // map ray to background color
-fn ray_color(ray: &Ray) -> Vec3 {
-    let t = 0.5 * (ray.direction.y + 1.0);
-    Vec3::UNIT * (1.0 - t) + Vec3::new(0.5, 0.7, 1.0) * t
+fn ray_color(scene: &Scene, ray: &Ray) -> Vec3 {
+    for geometry in scene {
+        if let Some(intersect) = geometry.intersect_with(&ray, 0.0, f64::MAX) {
+            let normal = &intersect.normal;
+            return Vec3(normal.0 + 1.0, normal.1 + 1.0, normal.2 + 1.0) * 0.5;
+        }
+    }
+
+    let a = 0.5 * (ray.direction.1 + 1.0);
+    Vec3::UNIT * (1.0 - a) + Vec3(0.5, 0.7, 1.0) * a
 }
 
 fn main() {
     // scene
-    let sphere = Sphere {
-        origin: Vec3::new(0.0, 0.0, -1.0),
-        radius: 0.5
-    };
+    let scene: Vec<Box<dyn Geometry>> = vec![
+        Box::new(Sphere { origin: Vec3(0.0, 0.0, -1.0), radius: 0.5 }),
+        Box::new(Sphere { origin: Vec3(0.0, -100.5, -1.0), radius: 100.0 })
+    ];
 
-    // image
-    let aspect_ratio = 16.0 / 9.0;
-    let img_width = 400;
-    let img_height = (img_width as f64 / aspect_ratio) as u32;
-    // camera
-    let viewport_height = 2.0;
-    let viewport_width = aspect_ratio * viewport_height;
-    let focal_length = 1.0;
+    let camera = Camera::new(1080, 16.0 / 9.0, 1.0, 2.0, Vec3::ZERO);
 
-    let origin = Vec3::ZERO;
-    let horizontal = Vec3::new(viewport_width, 0.0, 0.0);
-    let vertical = Vec3::new(0.0, viewport_height, 0.0);
-    let lower_left_corner = origin - (horizontal * 0.5 + vertical * 0.5 + Vec3::FORWARD * focal_length);
+    let mut buf: image::ImageBuffer<Rgb<u8>, _> = image::ImageBuffer::new(camera.width, camera.height);
 
-    let mut buf: image::ImageBuffer<Rgb<u8>, _> = image::ImageBuffer::new(img_width, img_height);
+    for y in 0..camera.height {
+        // println!("Scanlines remaining: {}/{}", y, img_height);
+        for x in 0..camera.width {
+            let ray = camera.generate_ray_for_pixel(x, y);
 
-    for y in 0..img_height {
-        println!("Scanlines remaining: {}/{}", y, img_height);
-        for x in 0..img_width {
-            let u = y as f64 / (img_height - 1) as f64;
-            let v = x as f64 / (img_width - 1) as f64;
-            let ray = Ray::new(&origin, &(lower_left_corner + vertical * u + horizontal * v));
-            let pix = ray_color(&ray).into();
-            buf.put_pixel(x, img_height - y - 1, pix);
+            let pix = ray_color(&scene, &ray).into();
+            buf.put_pixel(x, y, pix);
         }
     }
 
