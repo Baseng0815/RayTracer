@@ -1,7 +1,7 @@
 use crate::ray::*;
 use crate::vec::*;
 
-#[derive(PartialEq, Clone, Copy)]
+#[derive(PartialEq)]
 pub struct Intersect {
     pub t: f64,
     pub point: Vec3,
@@ -35,9 +35,9 @@ impl Geometry for Sphere {
         let discriminant = half_b * half_b - c;
 
         if discriminant >= 0.0 {
-            let mut t = -(half_b - discriminant.sqrt());
+            let mut t = -(half_b + discriminant.sqrt());
             if t < t_min {
-                t = -(half_b + discriminant.sqrt());
+                t = -(half_b - discriminant.sqrt());
             }
 
             if t >= t_min && t <= t_max {

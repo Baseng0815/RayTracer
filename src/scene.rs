@@ -17,10 +17,11 @@ impl Scene {
 
         for geom in &self.geometry {
             if let Some(intersect) = geom.intersect_with(ray, t_min, t_max) {
-                if closest == None {
-                    closest = Some(intersect)
-                } else if intersect.t < closest.unwrap().t {
-                    closest = Some(intersect);
+                match &closest {
+                    None => closest = Some(intersect),
+                    Some(closest_unwrap) => if intersect.t < closest_unwrap.t {
+                        closest = Some(intersect)
+                    }
                 }
             }
         }

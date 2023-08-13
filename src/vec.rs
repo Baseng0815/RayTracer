@@ -10,6 +10,35 @@ impl Vec3 {
     pub const UP: Vec3 = Vec3(0.0, 1.0, 0.0);
     pub const FORWARD: Vec3 = Vec3(0.0, 0.0, -1.0);
 
+    pub fn random() -> Vec3 {
+        Vec3(rand::random(), rand::random(), rand::random())
+    }
+
+    pub fn random_range(min: f64, max: f64) -> Vec3 {
+        let scale = max - min;
+        let v = || rand::random::<f64>() * scale + min;
+        Vec3(v(), v(), v())
+    }
+
+    pub fn random_on_unit_sphere() -> Vec3 {
+        loop {
+            let vec = Vec3::random_range(-1.0, 1.0);
+            if vec.len_squared() <= 1.0 {
+                return vec.normalized();
+            }
+        }
+    }
+
+    pub fn random_on_hemisphere(normal: &Vec3) -> Vec3 {
+        let vec = Vec3::random_on_unit_sphere();
+
+        if vec.dot(normal) < 0.0 {
+            -vec
+        } else {
+            vec
+        }
+    }
+
     pub fn dot(&self, other: &Vec3) -> f64 {
         self.0 * other.0 + self.1 * other.1 + self.2 * other.2
     }

@@ -1,5 +1,4 @@
-use crate::ray::*;
-use crate::vec::*;
+use crate::{vec::Vec3, ray::Ray};
 
 pub struct Camera {
     pub height: u32,
@@ -10,8 +9,6 @@ pub struct Camera {
     vp_height: f64,
     pub samples_per_pixel: u32,
     origin: Vec3,
-    vp_horizontal: Vec3,
-    vp_vertical: Vec3,
     pixel_delta_x: Vec3,
     pixel_delta_y: Vec3,
     vp_pixel00: Vec3
@@ -38,8 +35,6 @@ impl Camera {
             vp_height,
             samples_per_pixel,
             origin,
-            vp_horizontal,
-            vp_vertical,
             pixel_delta_x,
             pixel_delta_y,
             vp_pixel00
@@ -57,10 +52,5 @@ impl Camera {
             origin: self.origin,
             direction: (pixel_sample - self.origin).normalized()
         }
-    }
-
-    pub fn background_color(ray: &Ray) -> Vec3 {
-        let a = 0.5 * (ray.direction.1 + 1.0);
-        Vec3::UNIT * (1.0 - a) + Vec3(0.5, 0.7, 1.0) * a
     }
 }
