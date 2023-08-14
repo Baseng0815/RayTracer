@@ -1,21 +1,14 @@
+use std::rc::Rc;
+
 use crate::ray::*;
 use crate::vec::*;
+use crate::material::*;
 
-#[derive(PartialEq)]
 pub struct Intersect {
     pub t: f64,
     pub point: Vec3,
-    pub normal: Vec3
-}
-
-impl Intersect {
-    pub fn new() -> Intersect {
-        Intersect {
-            t: f64::MAX,
-            point: Vec3::ZERO,
-            normal: Vec3::ZERO
-        }
-    }
+    pub normal: Vec3,
+    pub material: Rc<dyn Material>
 }
 
 pub trait Geometry {
@@ -24,7 +17,8 @@ pub trait Geometry {
 
 pub struct Sphere {
     pub origin: Vec3,
-    pub radius: f64
+    pub radius: f64,
+    pub material: Rc<dyn Material>
 }
 
 impl Geometry for Sphere {
@@ -43,7 +37,7 @@ impl Geometry for Sphere {
             if t >= t_min && t <= t_max {
                 let point = ray.at(t);
                 let normal = (point - self.origin).normalized();
-                return Some(Intersect { t, point, normal });
+                return Some(Intersect { t, point, normal, material: Rc::clone(&self.material) });
             }
         }
 

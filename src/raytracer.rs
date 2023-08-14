@@ -31,13 +31,9 @@ impl Raytracer {
 
         match hit {
             Some(intersect) => {
-                let new_dir = (intersect.normal + Vec3::random_on_unit_sphere()).normalized();
-                let new_ray = Ray {
-                    origin: intersect.point,
-                    direction: new_dir
-                };
+                let (scattered, attenuation) = intersect.material.scatter(ray, &intersect);
 
-                self.ray_color_depth(&new_ray, scene, depth_cur + 1) * 0.5
+                self.ray_color_depth(&scattered, scene, depth_cur + 1) * attenuation
             }
 
             None => self.background_color(&ray)

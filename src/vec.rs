@@ -39,6 +39,14 @@ impl Vec3 {
         }
     }
 
+    pub fn near_zero(&self, epsilon: f64) -> bool {
+        self.0.abs() < epsilon && self.1.abs() < epsilon && self.2.abs() < epsilon
+    }
+
+    pub fn reflected(&self, normal: &Vec3) -> Vec3 {
+        *self - *normal * (2.0 * self.dot(normal))
+    }
+
     pub fn dot(&self, other: &Vec3) -> f64 {
         self.0 * other.0 + self.1 * other.1 + self.2 * other.2
     }
@@ -107,6 +115,20 @@ impl std::ops::Mul<f64> for Vec3 {
 
 impl std::ops::MulAssign<f64> for Vec3 {
     fn mul_assign(&mut self, other: f64) {
+        *self = *self * other
+    }
+}
+
+impl std::ops::Mul<Vec3> for Vec3 {
+    type Output = Self;
+
+    fn mul(self, other: Vec3) -> Self::Output {
+        Vec3(other.0 * self.0, other.1 * self.1, other.2 * self.2)
+    }
+}
+
+impl std::ops::MulAssign<Vec3> for Vec3 {
+    fn mul_assign(&mut self, other: Vec3) {
         *self = *self * other
     }
 }
