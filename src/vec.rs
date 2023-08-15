@@ -1,3 +1,5 @@
+use std::ops::{Mul, Add};
+
 use image::Rgb;
 
 #[derive(Copy, Clone, Debug, PartialEq)]
@@ -45,6 +47,19 @@ impl Vec3 {
 
     pub fn reflected(&self, normal: &Vec3) -> Vec3 {
         *self - *normal * (2.0 * self.dot(normal))
+    }
+
+    pub fn refracted(&self, normal: &Vec3, frac_eta: f64) -> Vec3 {
+        // https://graphics.stanford.edu/courses/cs148-10-summer/docs/2006--degreve--reflection_refraction.pdf
+        let cos_i = -self.dot(&normal);
+        let sin_t2 = frac_eta * frac_eta * (1.0 - cos_i * cos_i);
+        if sin_t2 > 1.0 {
+            // total internal reflection
+            return self.reflected(normal);
+        }
+
+        let cos_t = (1.0 - sin_t2).sqrt();
+        *self * frac_eta + *normal * (frac_eta * cos_i - cos_t)
     }
 
     pub fn dot(&self, other: &Vec3) -> f64 {

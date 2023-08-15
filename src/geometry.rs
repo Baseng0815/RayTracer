@@ -1,4 +1,5 @@
 use std::rc::Rc;
+use std::sync::Arc;
 
 use crate::ray::*;
 use crate::vec::*;
@@ -8,7 +9,7 @@ pub struct Intersect {
     pub t: f64,
     pub point: Vec3,
     pub normal: Vec3,
-    pub material: Rc<dyn Material>
+    pub material: Arc<dyn Material + Send + Sync>
 }
 
 pub trait Geometry {
@@ -18,7 +19,7 @@ pub trait Geometry {
 pub struct Sphere {
     pub origin: Vec3,
     pub radius: f64,
-    pub material: Rc<dyn Material>
+    pub material: Arc<dyn Material + Send + Sync>
 }
 
 impl Geometry for Sphere {
@@ -37,7 +38,7 @@ impl Geometry for Sphere {
             if t >= t_min && t <= t_max {
                 let point = ray.at(t);
                 let normal = (point - self.origin).normalized();
-                return Some(Intersect { t, point, normal, material: Rc::clone(&self.material) });
+                return Some(Intersect { t, point, normal, material: Arc::clone(&self.material) });
             }
         }
 

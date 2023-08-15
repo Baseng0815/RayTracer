@@ -2,7 +2,7 @@ use crate::geometry::*;
 use crate::ray::*;
 
 pub struct Scene {
-    pub geometry: Vec<Box<dyn Geometry>>
+    pub geometry: Vec<Box<dyn Geometry + Send + Sync>>
 }
 
 impl Scene {
