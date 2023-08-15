@@ -22,14 +22,14 @@ fn main() {
     let mat_ground:      Arc<dyn Material + Send + Sync>   = Arc::new(Lambertian { albedo: Vec3(0.8, 0.8, 0.0) });
     let mat_center:      Arc<dyn Material + Send + Sync>   = Arc::new(Lambertian { albedo: Vec3(0.7, 0.3, 0.3) });
     let mat_left:        Arc<dyn Material + Send + Sync>   = Arc::new(Metal      { albedo: Vec3(0.8, 0.8, 0.8), fuzz: 0.3 });
-    let mat_right:       Arc<dyn Material + Send + Sync>   = Arc::new(Metal      { albedo: Vec3(0.8, 0.6, 0.2), fuzz: 0.7 });
+    let mat_right:       Arc<dyn Material + Send + Sync>   = Arc::new(Metal      { albedo: Vec3(0.8, 0.6, 0.2), fuzz: 0.1 });
     let mat_dielectric:  Arc<dyn Material + Send + Sync>   = Arc::new(Dielectric { eta: 1.5 });
 
     let mut scene = Scene::new();
     scene.geometry.push(Box::new(Sphere { origin: Vec3( 0.0, -100.5, -1.0), radius: 100.0, material: Arc::clone(&mat_ground) }));
-    scene.geometry.push(Box::new(Sphere { origin: Vec3( 0.0,    0.0, -1.0), radius:   0.5, material: Arc::clone(&mat_center) }));
+    scene.geometry.push(Box::new(Sphere { origin: Vec3(-0.5,    0.2, -1.5), radius:   0.5, material: Arc::clone(&mat_center) }));
     scene.geometry.push(Box::new(Sphere { origin: Vec3(-1.0,    0.0, -1.0), radius:   0.5, material: Arc::clone(&mat_dielectric) }));
-    scene.geometry.push(Box::new(Sphere { origin: Vec3( 1.0,    0.0, -1.0), radius:   0.5, material: Arc::clone(&mat_dielectric)  }));
+    scene.geometry.push(Box::new(Sphere { origin: Vec3( 1.0,    0.0, -1.0), radius:   0.5, material: Arc::clone(&mat_right) }));
 
     let camera = Camera::new(480, 16.0 / 9.0, 1.0, 2.0, 50, Vec3::ZERO);
     let raytracer = Raytracer::new(Vec3(0.5, 0.7, 1.0), 10);

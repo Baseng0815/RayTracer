@@ -51,13 +51,9 @@ impl Vec3 {
 
     pub fn refracted(&self, normal: &Vec3, frac_eta: f64) -> Vec3 {
         // https://graphics.stanford.edu/courses/cs148-10-summer/docs/2006--degreve--reflection_refraction.pdf
+        // assume no total internal reflection
         let cos_i = -self.dot(&normal);
         let sin_t2 = frac_eta * frac_eta * (1.0 - cos_i * cos_i);
-        if sin_t2 > 1.0 {
-            // total internal reflection
-            return self.reflected(normal);
-        }
-
         let cos_t = (1.0 - sin_t2).sqrt();
         *self * frac_eta + *normal * (frac_eta * cos_i - cos_t)
     }
